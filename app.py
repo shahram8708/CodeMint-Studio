@@ -17,6 +17,10 @@ def index():
 def run_code():
     return render_template('run.html')
 
+@app.route('/unsupported')
+def unsupported():
+    return render_template('unsupported.html')
+
 @app.route('/search', methods=['POST'])
 def search():
     search_query = request.form['search_query']
