@@ -13,6 +13,10 @@ DEFAULT_TEXT = "Please generate the complete code with syntax."
 def index():
     return render_template('index.html')
 
+@app.route('/run')
+def run_code():
+    return render_template('run.html')
+
 @app.route('/search', methods=['POST'])
 def search():
     search_query = request.form['search_query']
