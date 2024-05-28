@@ -51,7 +51,6 @@
             border-right: 1px solid #3c3c3c;
         }
 
-
         .result-container {
             background-color: #1e1e1e;
             color: #d4d4d4;
@@ -59,6 +58,17 @@
             white-space: pre-wrap;
             overflow-y: auto;
             position: relative;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            position: sticky;
+            top: 10px;
+            right: 10px;
+            z-index: 1;
+            justify-content: center;
+            align-items: center;
         }
 
         .copy-button {
@@ -89,6 +99,33 @@
             box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
         }
 
+        .run-button {
+            position: sticky;
+            top: 50px;
+            right: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 1em;
+            z-index: 1;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
+        }
+
+        .run-button:hover,
+        .run-button:focus {
+            background-color: #218838;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .run-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+        }
 
         textarea {
             width: 95%;
@@ -186,6 +223,41 @@
         footer a:hover {
             text-decoration: underline;
         }
+
+        .popup {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .popup-content {
+            background-color: #fefefe;
+            margin: 20% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
@@ -196,6 +268,18 @@
             <h1>CodeMint Studio</h1>
         </div>
     </header>
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close" onclick="closePopup()">&times;</span>
+            <p style="color: #1e1e1e;">
+                When you click the Run Code button, only JavaScript code will be executed. To utilize this feature, you
+                must manually input your JavaScript code in the editor provided. This ensures that you have full control
+                over the code you wish to run, promoting a hands-on approach to learning and testing JavaScript. Please
+                ensure that your code is correctly formatted and syntactically accurate for the best results. Happy
+                coding!
+            </p>
+        </div>
+    </div>
     <main>
         <section class="editor-container">
             <div class="editor-header">
@@ -204,11 +288,14 @@
             <form id="search-form" method="post">
                 <textarea name="search_query" id="search_query"
                     placeholder="Enter your coding prompt, such as a specific function, algorithm, or code snippet you need help with. For example: 'How to write a merge sort in Python?' or 'JavaScript function for filtering an array.' You can also get live code suggestions, for instance: 'def merge_sort(arr):...'"></textarea>
-
             </form>
         </section>
         <section id="result" class="result-container">
-            <button class="copy-button" onclick="copyToClipboard()">Copy Code</button>
+            <div class="button-container">
+                <button class="copy-button" onclick="copyToClipboard()">Copy Code</button>
+                <button class="run-button" onclick="runCode()">Run Code</button>
+            </div>
+
             <div id="code-suggestion"></div>
         </section>
     </main>
@@ -275,6 +362,34 @@
                 console.error('Could not copy text: ', err);
             });
         }
+
+        function showPopup() {
+            document.getElementById("popup").style.display = "block";
+        }
+
+        function closePopup() {
+            document.getElementById("popup").style.display = "none";
+        }
+
+
+        function runCode() {
+            window.location.href = '/run';
+        }
+
+        window.onload = function () {
+            checkDevice();
+            showPopup();
+        };
+
+        function checkDevice() {
+            var userAgent = navigator.userAgent;
+            var isDesktop = /Windows NT|Macintosh/.test(userAgent);
+
+            if (!isDesktop) {
+                alert("Sorry, this website is optimized for laptop, computer, and MacBook use only. Other devices are not supported.");
+            }
+        }
+
     </script>
 </body>
 
