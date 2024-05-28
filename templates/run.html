@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Run Code - CodeMint Studio</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background-color: #007acc;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            color: #fff;
+        }
+
+        .header-content h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            padding: 0;
+            margin: 0;
+        }
+
+        .editor-container,
+        .result-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            height: 100%;
+        }
+
+        .editor-container {
+            padding: 20px;
+            background-color: #252526;
+            border-right: 1px solid #3c3c3c;
+        }
+
+        .result-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            position: relative;
+        }
+
+
+        .run-button {
+            right: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 1em;
+            z-index: 1;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
+        }
+
+        .run-button:hover,
+        .run-button:focus {
+            background-color: #218838;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .run-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+        }
+
+
+
+        textarea {
+            width: 95%;
+            height: 100%;
+            height: 70vh;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border: none;
+            border-radius: 3px;
+            padding: 10px;
+            font-size: 1em;
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            resize: none;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        textarea::-webkit-scrollbar-thumb {
+            background-color: #007acc;
+            border-radius: 4px;
+        }
+
+        textarea::-webkit-scrollbar-track {
+            background-color: #2d2d2d;
+        }
+
+        #code-output {
+            height: 100%;
+            height: 69vh;
+            margin: 33px 20px;
+            padding: 15px;
+            background-color: #333333;
+            color: #d4d4d4;
+            overflow-y: auto;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+        }
+
+        #code-output:hover {
+            border: 1px solid #007acc;
+        }
+
+        #code-output:focus {
+            border: 1px solid #007acc;
+        }
+
+        #code-output::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #code-output::-webkit-scrollbar-thumb {
+            background-color: #007acc;
+            border-radius: 4px;
+        }
+
+        #code-output::-webkit-scrollbar-track {
+            background-color: #2d2d2d;
+        }
+
+        textarea:hover {
+            border: 1px solid #007acc;
+        }
+
+        textarea:focus {
+            outline: none;
+            border: 1px solid #007acc;
+        }
+
+        footer {
+            background-color: #2d2d2d;
+            color: #d4d4d4;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            width: 100%;
+            border-top: 1px solid #3c3c3c;
+            box-sizing: border-box;
+        }
+
+        footer p {
+            margin: 0;
+            padding: 0;
+            line-height: 1.5em;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .popup-content {
+            background-color: #fefefe;
+            margin: 20% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+
+        footer a {
+            color: #007acc;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            position: sticky;
+            top: 10px;
+            right: 10px;
+            z-index: 1;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .copy-button {
+            position: sticky;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 1em;
+            z-index: 1;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
+        }
+
+        .copy-button:hover,
+        .copy-button:focus {
+            background-color: #005f99;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .copy-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Run Code - CodeMint Studio</h1>
+        </div>
+    </header>
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close" onclick="closePopup()">&times;</span>
+            <p style="color: #1e1e1e;">
+                When you click the Run Code button, only JavaScript code will be executed. To utilize this feature, you
+                must manually input your JavaScript code in the editor provided. This ensures that you have full control
+                over the code you wish to run, promoting a hands-on approach to learning and testing JavaScript. Please
+                ensure that your code is correctly formatted and syntactically accurate for the best results. Happy
+                coding!
+            </p>
+        </div>
+    </div>
+    <main>
+        <section class="editor-container">
+            <div class="editor-header">
+                <h2>Enter Code</h2>
+            </div>
+            <textarea id="code-editor"
+                placeholder="Write your JavaScript code here. Only JavaScript code will be executed."></textarea>
+
+        </section>
+        <section class="result-container">
+            <div class="button-container">
+                <button class="copy-button" onclick="redirectToHomePage()">Home</button>
+                <button class="run-button" onclick="runCode()">Run Code</button>
+            </div>
+            <div id="code-output"></div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 CodeMint Studio. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of
+                Service</a></p>
+        <p>Please note: This platform only supports the execution of JavaScript code. Ensure your submissions are
+            written in JavaScript for successful execution and accurate results.</p>
+    </footer>
+
+
+    <script>
+        $(document).ready(function () {
+            const codeToRun = localStorage.getItem('codeToRun');
+            $('#code-editor').val(codeToRun);
+
+            window.runCode = function () {
+                const code = $('#code-editor').val();
+                const codeOutput = document.getElementById('code-output');
+                codeOutput.innerHTML = "";
+
+                try {
+                    const func = new Function(code);
+                    const result = func();
+                    codeOutput.textContent = result !== undefined ? result.toString() : 'Code executed successfully';
+                } catch (error) {
+                    codeOutput.textContent = 'Error: ' + error.message;
+                }
+            };
+
+        });
+
+        function showPopup() {
+            document.getElementById("popup").style.display = "block";
+        }
+
+        function closePopup() {
+            document.getElementById("popup").style.display = "none";
+        }
+
+        function redirectToHomePage() {
+            window.location.href = "/";
+        }
+
+        window.onload = function () {
+            checkDevice();
+            showPopup();
+        };
+
+        function checkDevice() {
+            var userAgent = navigator.userAgent;
+            var isDesktop = /Windows NT|Macintosh/.test(userAgent);
+
+            if (!isDesktop) {
+                alert("Sorry, this website is optimized for laptop, computer, and MacBook use only. Other devices are not supported.");
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
