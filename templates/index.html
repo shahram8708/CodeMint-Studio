@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeMint Studio</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background-color: #007acc;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            color: #fff;
+        }
+
+        .header-content h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            padding: 0;
+            margin: 0;
+        }
+
+        .editor-container,
+        .result-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            height: 100%;
+        }
+
+        .editor-container {
+            padding: 20px;
+            background-color: #252526;
+            border-right: 1px solid #3c3c3c;
+        }
+
+
+        .result-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .copy-button {
+            position: sticky;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 1em;
+            z-index: 1;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
+        }
+
+        .copy-button:hover,
+        .copy-button:focus {
+            background-color: #005f99;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .copy-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+        }
+
+
+        textarea {
+            width: 95%;
+            height: 100%;
+            height: 70vh;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border: none;
+            border-radius: 3px;
+            padding: 10px;
+            font-size: 1em;
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            resize: none;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        textarea::-webkit-scrollbar-thumb {
+            background-color: #007acc;
+            border-radius: 4px;
+        }
+
+        textarea::-webkit-scrollbar-track {
+            background-color: #2d2d2d;
+        }
+
+        #code-suggestion {
+            height: 100%;
+            height: 69vh;
+            margin: 33px 20px;
+            padding: 15px;
+            background-color: #333333;
+            color: #d4d4d4;
+            overflow-y: auto;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+        }
+
+        #code-suggestion:hover {
+            border: 1px solid #007acc;
+        }
+
+        #code-suggestion:focus {
+            border: 1px solid #007acc;
+        }
+
+        #code-suggestion::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #code-suggestion::-webkit-scrollbar-thumb {
+            background-color: #007acc;
+            border-radius: 4px;
+        }
+
+        #code-suggestion::-webkit-scrollbar-track {
+            background-color: #2d2d2d;
+        }
+
+        textarea:hover {
+            border: 1px solid #007acc;
+        }
+
+        textarea:focus {
+            outline: none;
+            border: 1px solid #007acc;
+        }
+
+        footer {
+            background-color: #2d2d2d;
+            color: #d4d4d4;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            width: 100%;
+            border-top: 1px solid #3c3c3c;
+            box-sizing: border-box;
+        }
+
+        footer p {
+            margin: 0;
+            padding: 0;
+            line-height: 1.5em;
+        }
+
+        footer a {
+            color: #007acc;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <div class="header-content">
+            <h1>CodeMint Studio</h1>
+        </div>
+    </header>
+    <main>
+        <section class="editor-container">
+            <div class="editor-header">
+                <h2>Enter Code</h2>
+            </div>
+            <form id="search-form" method="post">
+                <textarea name="search_query" id="search_query"
+                    placeholder="Enter your coding prompt, such as a specific function, algorithm, or code snippet you need help with. For example: 'How to write a merge sort in Python?' or 'JavaScript function for filtering an array.' You can also get live code suggestions, for instance: 'def merge_sort(arr):...'"></textarea>
+
+            </form>
+        </section>
+        <section id="result" class="result-container">
+            <button class="copy-button" onclick="copyToClipboard()">Copy Code</button>
+            <div id="code-suggestion"></div>
+        </section>
+    </main>
+    <footer>
+        <p>
+            <strong>CodeMint Studio</strong> is an innovative platform designed for developers seeking a powerful yet
+            user-friendly coding environment. Blending the features of a traditional text editor with advanced code
+            suggestion and generation tools, it offers a unique solution that enhances productivity and creativity.
+            Whether you're writing, debugging, or generating code, CodeMint Studio provides all the necessary tools to
+            elevate your programming experience.
+        </p>
+        <p>&copy; 2024 CodeMint Studio. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of
+                Service</a></p>
+    </footer>
+
+    <script>
+        $(document).ready(function () {
+            let typingTimer;
+            const doneTypingInterval = 1000;
+
+            $('#search_query').on('input', function () {
+                clearTimeout(typingTimer);
+                typingTimer = setTimeout(doneTyping, doneTypingInterval);
+            });
+
+            $('#search_query').on('keydown', function () {
+                clearTimeout(typingTimer);
+            });
+
+            function doneTyping() {
+                var search_query = $('#search_query').val();
+                if (search_query.trim() === "") {
+                    $('#result').hide();
+                    $('#error').hide();
+                    return;
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '/search',
+                    data: { search_query: search_query },
+                    success: function (response) {
+                        if (response.success) {
+                            $('#code-suggestion').html(response.code_suggestion);
+                            $('#result').show();
+                            $('#error').hide();
+                        } else {
+                            $('#error').html(response.error).show();
+                            $('#result').hide();
+                        }
+                    },
+                    error: function () {
+                        $('#error').html('An error occurred. Please try again.').show();
+                        $('#result').hide();
+                    }
+                });
+            }
+        });
+
+        function copyToClipboard() {
+            const codeSuggestion = document.getElementById('code-suggestion').innerText;
+            navigator.clipboard.writeText(codeSuggestion).then(() => {
+                alert('Code copied to clipboard!');
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+            });
+        }
+    </script>
+</body>
+
+</html>
