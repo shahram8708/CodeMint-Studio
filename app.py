@@ -5,7 +5,7 @@ import logging
 app = Flask(__name__, static_url_path='/static')
 logging.basicConfig(level=logging.DEBUG)
 
-API_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyBt_UKi-gC5PM9VsIZ0TjoJMAVKsYM0KVU"
+API_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=API_Key"
 
 DEFAULT_TEXT = "Please generate the complete code with syntax."
 
